@@ -33,11 +33,11 @@ class DataProcessor(object):
 
         train_generator = train_data.flow_from_directory(
             # 提供的路径下面需要有子目录
-            data_path, 
-            # 整数元组 (height, width)，默认：(256, 256)。 所有的图像将被调整到的尺寸。
-            target_size=target_size,
+            self.data_path, 
+            # 整数元组 (height, width)。 所有的图像将被调整到的尺寸。
+            target_size=self.target_size,
             # 一批数据的大小
-            batch_size=batch_size,
+            batch_size=self.batch_size,
             # "categorical", "binary", "sparse", "input" 或 None 之一。
             # 默认："categorical",返回one-hot 编码标签。
             class_mode='categorical',
@@ -45,6 +45,7 @@ class DataProcessor(object):
             subset='training', 
             seed=0)
         return train_generator
+    
     def get_validation_generator(self):
         validation_data = ImageDataGenerator(
             rescale=1. / 255,
@@ -57,5 +58,4 @@ class DataProcessor(object):
             class_mode='categorical',
             subset='validation',
             seed=0)
-
-    return train_generator, validation_generator
+        return validation_generator

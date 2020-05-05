@@ -7,15 +7,6 @@ model_path = "results/net.h5"
 model = load_model(model_path)
 
 def predict(img):
-    """
-    加载模型和模型预测
-    主要步骤:
-        1.图片处理
-        2.用加载的模型预测图片的类别
-    :param img: PIL.Image 对象
-    :return: string, 模型识别图片的类别, 
-            共 'cardboard','glass','metal','paper','plastic','trash' 6 个类别
-    """
     model_path = 'results/net.h5'
     model = load_model(model_path)
     img = image.img_to_array(img)
