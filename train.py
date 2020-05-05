@@ -117,7 +117,7 @@ def train_model(train_generator, validation_generator, save_model_path='results/
             # 一个生成器或 Sequence 对象的实例
             generator=train_generator,
             # epochs: 整数，数据的迭代总轮数。
-            epochs=5,
+            epochs=1,
             # 一个epoch包含的步数,通常应该等于你的数据集的样本数量除以批量大小。
             steps_per_epoch=2076 // 32,
             # 验证集
@@ -125,7 +125,7 @@ def train_model(train_generator, validation_generator, save_model_path='results/
             # 在验证集上,一个epoch包含的步数,通常应该等于你的数据集的样本数量除以批量大小。
             validation_steps=231 // 32)
     # 模型保存
-    model.save(model_save_path)
+    model.save(save_model_path)
 
     return d, model
 
