@@ -8,10 +8,10 @@ import os
 # 加载模型(请加载你认为的最佳模型)
 # 加载模型,加载请注意 model_path 是相对路径, 与当前文件同级。
 # 如果你的模型是在 results 文件夹下的 dnn.h5 模型，则 model_path = 'results/dnn.h5'
-model_path = None
+model_path = results/net.h5
 
 # 加载模型，如果采用keras框架训练模型，则 model=load_model(model_path)
-model = None
+model = load_model(model_path)
     
 # ---------------------------------------------------------------------------
 

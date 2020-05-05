@@ -128,7 +128,17 @@ def train_model(train_generator, validation_generator, save_model_path='results/
     model.save(save_model_path)
 
     return d, model
-
+def load_and_model_prediction(validation_generator):
+    """
+    加载模型和模型评估，打印验证集的 loss 和准确度
+    :param validation_generator: 预测数据
+    :return: 
+    """
+    # 加载模型
+    model = load_model('results/dnn.h5')
+    # 获取验证集的 loss 和 accuracy
+    loss, accuracy = model.evaluate_generator(validation_generator)
+    print("\nLoss: %.2f, Accuracy: %.2f%%" % (loss, accuracy * 100))
 def plot_training_history(res):
     """
     绘制模型的训练结果
@@ -198,7 +208,8 @@ def main():
 
     # 创建、训练和保存模型
     res,model = train_model(train_data, test_data, save_model_path)
-    plot_training_history(res)
+    load_and_model_prediction(test_data)
+    #plot_training_history(res)
     # 评估模型
     evaluate_mode(test_data, save_model_path)
 
