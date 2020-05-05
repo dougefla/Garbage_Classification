@@ -3,17 +3,8 @@ from keras.preprocessing import image
 import numpy as np
 import os
 
-
-# -------------------------- 请加载您最满意的模型 ---------------------------
-# 加载模型(请加载你认为的最佳模型)
-# 加载模型,加载请注意 model_path 是相对路径, 与当前文件同级。
-# 如果你的模型是在 results 文件夹下的 dnn.h5 模型，则 model_path = 'results/dnn.h5'
-model_path = results/net.h5
-
-# 加载模型，如果采用keras框架训练模型，则 model=load_model(model_path)
+model_path = "results/net.h5"
 model = load_model(model_path)
-    
-# ---------------------------------------------------------------------------
 
 def predict(img):
     """
@@ -25,25 +16,31 @@ def predict(img):
     :return: string, 模型识别图片的类别, 
             共 'cardboard','glass','metal','paper','plastic','trash' 6 个类别
     """
-    # -------------------------- 实现模型预测部分的代码 ---------------------------
-    # 获取图片的类别，共 'cardboard','glass','metal','paper','plastic','trash' 6 个类别
-    # 把图片转换成为numpy数组
+    model_path = 'results/net.h5'
+    model = load_model(model_path)
     img = image.img_to_array(img)
-    
-
+    img = 1.0/255 * img
+    x = np.expand_dims(img, axis=0)
     # 获取输入图片的类别
     y_predict = None
+    # expand_dims的作用是把img.shape转换成(1, img.shape[0], img.shape[1], img.shape[2])
+    x = np.expand_dims(img, axis=0)
 
-    # -------------------------------------------------------------------------
-    
+    # 模型预测
+    y = model.predict(x)
+
+    # 获取labels
+    labels = {0: 'cardboard', 1: 'glass', 2: 'metal', 3: 'paper', 4: 'plastic', 5: 'trash'}
+
+    # 获取输入图片的类别
+    y_predict = labels[np.argmax(y)]
+
     # 返回图片的类别
     return y_predict
 
-from keras.preprocessing import image
-
 # 输入图片路径和名称
-img_path = 'test.jpg'
-
+img_path = 'datasets/la1ji1fe1nle4ishu4ju4ji22-momodel/dataset-resized/cardboard/cardboard2.jpg'
 # 打印该张图片的类别
-img = image.load_img(img_path)
+img = image.load_img(img_path,target_size=(227,227))
+
 print(predict(img))
