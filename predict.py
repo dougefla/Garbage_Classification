@@ -3,12 +3,10 @@ from keras.preprocessing import image
 import numpy as np
 import os
 
-model_path = "results/net.h5"
-model = load_model(model_path)
-
 def predict(img):
-    model_path = 'results/net.h5'
+    model_path = 'results/model.h5'
     model = load_model(model_path)
+    img = img.resize((150, 150),Image.ANTIALIAS)
     img = image.img_to_array(img)
     img = 1.0/255 * img
     x = np.expand_dims(img, axis=0)
@@ -32,6 +30,6 @@ def predict(img):
 # 输入图片路径和名称
 img_path = 'datasets/la1ji1fe1nle4ishu4ju4ji22-momodel/dataset-resized/cardboard/cardboard2.jpg'
 # 打印该张图片的类别
-img = image.load_img(img_path,target_size=(227,227))
+img = image.load_img(img_path)
 
 print(predict(img))
