@@ -47,7 +47,7 @@ def processing_data(data_path):
             # 提供的路径下面需要有子目录
             data_path, 
             # 整数元组 (height, width)，默认：(256, 256)。 所有的图像将被调整到的尺寸。
-            target_size=(150, 150),
+            target_size=(224, 224),
             # 一批数据的大小
             batch_size=16,
             # "categorical", "binary", "sparse", "input" 或 None 之一。
@@ -58,7 +58,7 @@ def processing_data(data_path):
             seed=0)
     validation_generator = validation_data.flow_from_directory(
             data_path,
-            target_size=(150, 150),
+            target_size=(224, 224),
             batch_size=16,
             class_mode='categorical',
             subset='validation',
@@ -67,15 +67,7 @@ def processing_data(data_path):
     return train_generator, validation_generator
 
 def model(train_generator, validation_generator, save_model_path):
-    Model_VGG = VGG16(weights='imagenet',include_top=False, input_shape=(150,150,3))
-    Model_top = Sequential()
-    Model_top.add(Flatten(input_shape=Model_VGG.output_shape[1:]))
-    Model_top.add(Dense(256,activation='relu'))
-    Model_top.add(Dropout(0.5))
-    Model_top.add(Dense(6,activation='softmax'))
-    model = Sequential()
-    model.add(Model_VGG)
-    model.add(Model_top)
+    model = VGG16(weights='None',include_top=True, input_shape=(224,224,3), classes = 6)
     model.compile(
             optimizer=SGD(lr=1e-3,momentum=0.9),
             loss='categorical_crossentropy',
@@ -83,7 +75,7 @@ def model(train_generator, validation_generator, save_model_path):
 
     model.fit_generator(
             generator=train_generator,
-            epochs=200,
+            epochs=10,
             steps_per_epoch=2259 // 16,
             validation_data=validation_generator,
             validation_steps=248 // 16,
