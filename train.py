@@ -19,7 +19,8 @@ def processing_data(data_path):
     :param data_path: 数据集路径
     :return: train, test:处理后的训练集数据、测试集数据
     """
-    train_data = ImageDataGenerator(
+
+    data_generator = ImageDataGenerator(
             # 对图片的每个像素值均乘上这个放缩因子，把像素值放缩到0和1之间有利于模型的收敛
             rescale=1. / 225,  
             # 浮点数，剪切强度（逆时针方向的剪切变换角度）
@@ -35,15 +36,10 @@ def processing_data(data_path):
             # 布尔值，进行随机竖直翻转
             vertical_flip=True,
             # 在 0 和 1 之间浮动。用作验证集的训练数据的比例
-            validation_split=0.1  
+            validation_split=0.1
     )
 
-    # 接下来生成测试集，可以参考训练集的写法
-    validation_data = ImageDataGenerator(
-            rescale=1. / 255,
-            validation_split=0.1)
-
-    train_generator = train_data.flow_from_directory(
+    train_generator = data_generator.flow_from_directory(
             # 提供的路径下面需要有子目录
             data_path, 
             # 整数元组 (height, width)，默认：(256, 256)。 所有的图像将被调整到的尺寸。
@@ -56,7 +52,7 @@ def processing_data(data_path):
             # 数据子集 ("training" 或 "validation")
             subset='training', 
             seed=0)
-    validation_generator = validation_data.flow_from_directory(
+    validation_generator = data_generator.flow_from_directory(
             data_path,
             target_size=(224, 224),
             batch_size=16,
@@ -67,15 +63,7 @@ def processing_data(data_path):
     return train_generator, validation_generator
 
 def model(train_generator, validation_generator, save_model_path):
-    Model_VGG = VGG16(weights='None',include_top=False, input_shape=(224,224,3))
-    Model_top = Sequential()
-    Model_top.add(Flatten(input_shape=Model_VGG.output_shape[1:]))
-    Model_top.add(Dense(256,activation='relu'))
-    Model_top.add(Dropout(0.5))
-    Model_top.add(Dense(6,activation='softmax'))
-    model = Sequential()
-    model.add(Model_VGG)
-    model.add(Model_top)
+    model = VGG16(weights=None,include_top=True, input_shape=(224,224,3), classes = 6)
     model.compile(
             optimizer=SGD(lr=1e-3,momentum=0.9),
             loss='categorical_crossentropy',
@@ -84,16 +72,16 @@ def model(train_generator, validation_generator, save_model_path):
     model.fit_generator(
             generator=train_generator,
             epochs=200,
-            steps_per_epoch=2259 // 16,
+            steps_per_epoch=2076 // 16,
             validation_data=validation_generator,
-            validation_steps=248 // 16,
+            validation_steps=231 // 16,
             )
     model.save(save_model_path)
 
     return model
 
 def evaluate_mode(validation_generator, save_model_path):
-    model = load_model('results/model.h5')
+    model = load_model('results/model2.h5')
     # 获取验证集的 loss 和 accuracy
     loss, accuracy = model.evaluate_generator(validation_generator)
     print("\nLoss: %.2f, Accuracy: %.2f%%" % (loss, accuracy * 100))
@@ -110,12 +98,12 @@ def predict(img):
             共 'cardboard','glass','metal','paper','plastic','trash' 6 个类别
     """
     # 把图片转换成为numpy数组
-    img = img.resize((150, 150))
+    img = img.resize((224, 224))
     img = image.img_to_array(img)
     
     # 加载模型,加载请注意 model_path 是相对路径, 与当前文件同级。
     # 如果你的模型是在 results 文件夹下的 dnn.h5 模型，则 model_path = 'results/dnn.h5'
-    model_path = 'results/model.h5'
+    model_path = 'results/model2.h5'
     try:
         # 作业提交时测试用, 请勿删除此部分
         model_path = os.path.realpath(__file__).replace('main.py', model_path)
@@ -149,7 +137,7 @@ def main():
     :return:
     """
     data_path = "./datasets/la1ji1fe1nle4ishu4ju4ji22-momodel/dataset-resized"  # 数据集路径
-    save_model_path = 'results/model.h5'  # 保存模型路径和名称
+    save_model_path = 'results/model2.h5'  # 保存模型路径和名称
     # 获取数据
     train_generator, validation_generator = processing_data(data_path)
     # 创建、训练和保存模型

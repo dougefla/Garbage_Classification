@@ -4,9 +4,9 @@ import numpy as np
 import os
 
 def predict(img):
-    model_path = 'results/model.h5'
+    model_path = 'results/model2.h5'
     model = load_model(model_path)
-    img = img.resize((150, 150),Image.ANTIALIAS)
+    img = img.resize((224, 224))
     img = image.img_to_array(img)
     img = 1.0/255 * img
     x = np.expand_dims(img, axis=0)
