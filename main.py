@@ -67,39 +67,25 @@ def processing_data(data_path):
     return train_generator, validation_generator
 
 def model(train_generator, validation_generator, save_model_path):
-    """
-    模型的建立
-    本次实验采用Vgg16模型
-    """
-    vgg16_model = VGG16(weights='imagenet',include_top=False, input_shape=(150,150,3))
-    top_model = Sequential()
-    top_model.add(Flatten(input_shape=vgg16_model.output_shape[1:]))
-    top_model.add(Dense(256,activation='relu'))
-    top_model.add(Dropout(0.5))
-    top_model.add(Dense(6,activation='softmax'))
-
+    Model_VGG = VGG16(weights='imagenet',include_top=False, input_shape=(150,150,3))
+    Model_top = Sequential()
+    Model_top.add(Flatten(input_shape=Model_VGG.output_shape[1:]))
+    Model_top.add(Dense(256,activation='relu'))
+    Model_top.add(Dropout(0.5))
+    Model_top.add(Dense(6,activation='softmax'))
     model = Sequential()
-    model.add(vgg16_model)
-    model.add(top_model)
-    # 编译模型, 采用 compile 函数: https://keras.io/models/model/#compile
+    model.add(Model_VGG)
+    model.add(Model_top)
     model.compile(
-             # 是优化器, 主要有Adam、sgd、rmsprop等方式。
             optimizer=SGD(lr=1e-3,momentum=0.9),
-            # 损失函数,多分类采用 categorical_crossentropy
             loss='categorical_crossentropy',
-            # 是除了损失函数值之外的特定指标, 分类问题一般都是准确率
             metrics=['accuracy'])
 
     model.fit_generator(
-            # 一个生成器或 Sequence 对象的实例
             generator=train_generator,
-            # epochs: 整数，数据的迭代总轮数。
             epochs=200,
-            # 一个epoch包含的步数,通常应该等于你的数据集的样本数量除以批量大小。
             steps_per_epoch=2259 // 16,
-            # 验证集
             validation_data=validation_generator,
-             # 在验证集上,一个epoch包含的步数,通常应该等于你的数据集的样本数量除以批量大小。
             validation_steps=248 // 16,
             )
     model.save(save_model_path)
@@ -107,8 +93,7 @@ def model(train_generator, validation_generator, save_model_path):
     return model
 
 def evaluate_mode(validation_generator, save_model_path):
-     # 加载模型
-    model = load_model('results/Ynnex1.h5')
+    model = load_model('results/model.h5')
     # 获取验证集的 loss 和 accuracy
     loss, accuracy = model.evaluate_generator(validation_generator)
     print("\nLoss: %.2f, Accuracy: %.2f%%" % (loss, accuracy * 100))
@@ -130,7 +115,7 @@ def predict(img):
     
     # 加载模型,加载请注意 model_path 是相对路径, 与当前文件同级。
     # 如果你的模型是在 results 文件夹下的 dnn.h5 模型，则 model_path = 'results/dnn.h5'
-    model_path = 'results/Ynnex1.h5'
+    model_path = 'results/model.h5'
     try:
         # 作业提交时测试用, 请勿删除此部分
         model_path = os.path.realpath(__file__).replace('main.py', model_path)
@@ -164,7 +149,7 @@ def main():
     :return:
     """
     data_path = "./datasets/la1ji1fe1nle4ishu4ju4ji22-momodel/dataset-resized"  # 数据集路径
-    save_model_path = 'results/Ynnex1.h5'  # 保存模型路径和名称
+    save_model_path = 'results/model.h5'  # 保存模型路径和名称
     # 获取数据
     train_generator, validation_generator = processing_data(data_path)
     # 创建、训练和保存模型
